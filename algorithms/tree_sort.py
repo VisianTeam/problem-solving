@@ -1,6 +1,6 @@
 import numpy as np
-from time import time
-from functools import wraps
+
+from utils.timeit import timeit
 
 
 class Tree:
@@ -29,18 +29,6 @@ class Tree:
             + [self.value]
             + (self.node_sup.to_list() if self.node_sup is not None else [])
         )
-
-
-def timeit(func):
-    @wraps(func)
-    def wrapper(l, *args, **kwargs):
-        start = time()
-        res = func(l, *args, **kwargs)
-        time_spent = time() - start
-        print(f"Took {time_spent:.5f}s in {func.__name__!r} [{len(l)} items]")
-        return res
-
-    return wrapper
 
 
 @timeit
