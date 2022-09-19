@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-Loc = Union[int, str]  # Index or name of city
-Segment = Tuple[Loc, Loc]
+GrapSegment = Tuple[int, int]  # index of origin, index of destination
 
 
 def filter_cities(df: pd.DataFrame, names: List[str]) -> pd.DataFrame:
@@ -49,7 +48,7 @@ class CitiesGraph:
     def __init__(self, coordinates: pd.DataFrame):
         """Initiate graph of cities with empty connections"""
         self.coords: pd.DataFrame = coordinates
-        self.connections: Set[Segment] = set()
+        self.connections: Set[GrapSegment] = set()
 
     def fully_connect(self):
         """Fully connect the graph"""
@@ -58,26 +57,21 @@ class CitiesGraph:
             for j, destin in enumerate(indexes[i+1:], i+1):
                 self.connections.add((origin, destin))
 
-    def get_city_xy(self, loc: Loc) -> Tuple[float, float]:
+    def get_city_xy(self, city_index: int) -> Tuple[float, float]:
         """Return coordinates of city given its index/name"""
-        if isinstance(loc, str):
-            city_df = self.coords[self.coords["city"] == loc]
-            assert len(city_df) == 1
-            city = city_df.iloc[0]
-        else:
-            city = self.coords.loc[loc]
+        city = self.coords.loc[city_index]
         return city.x, city.y
 
-    def plot_line(self, points: List[Loc], **kwargs) -> None:
-        """Plot continuous line between points"""
+    def plot_line(self, points: List[int], **kwargs) -> None:
+        """Plot continuous line between points (given their index in coords)"""
         return self.plot_segments(zip(points[:-1], points[1:]), **kwargs)
 
-    def plot_segments(self, segments: Iterable[Segment], **kwargs) -> None:
+    def plot_segments(self, segments: Iterable[GrapSegment], **kwargs) -> None:
         """Plot a list of segments"""
         for origin, destin in segments:
             self.plot_segment(origin, destin, **kwargs)
 
-    def plot_segment(self, origin: Loc, destination: Loc, **kwargs) -> None:
+    def plot_segment(self, origin: int, destination: int, **kwargs) -> None:
         """Plot a segment"""
         xo, yo = self.get_city_xy(origin)
         xd, yd = self.get_city_xy(destination)
