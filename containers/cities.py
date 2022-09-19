@@ -1,12 +1,12 @@
 from typing import Iterable, Set, Union
+from typing import List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-Loc = Union[int, str]
-
-import numpy as np
-from typing import List, Optional, Tuple
+Loc = Union[int, str]  # Index or name of city
+Segment = Tuple[Loc, Loc]
 
 
 def filter_cities(df: pd.DataFrame, names: List[str]) -> pd.DataFrame:
@@ -49,7 +49,7 @@ class CitiesGraph:
     def __init__(self, coordinates: pd.DataFrame):
         """Initiate graph of cities with empty connections"""
         self.coords: pd.DataFrame = coordinates
-        self.connections: Set[Tuple[int, int]] = set()
+        self.connections: Set[Segment] = set()
 
     def fully_connect(self):
         """Fully connect the graph"""
@@ -72,10 +72,10 @@ class CitiesGraph:
         """Plot continuous line between points"""
         return self.plot_segments(zip(points[:-1], points[1:]), **kwargs)
 
-    def plot_segments(self, segments: Iterable[Tuple[Loc, Loc]], **kwargs) -> None:
+    def plot_segments(self, segments: Iterable[Segment], **kwargs) -> None:
         """Plot a list of segments"""
-        for origin, destinatation in segments:
-            self.plot_segment(origin, destinatation, **kwargs)
+        for origin, destin in segments:
+            self.plot_segment(origin, destin, **kwargs)
 
     def plot_segment(self, origin: Loc, destination: Loc, **kwargs) -> None:
         """Plot a segment"""
