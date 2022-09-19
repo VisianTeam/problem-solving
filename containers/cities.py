@@ -6,6 +6,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 GrapSegment = Tuple[int, int]  # index of origin, index of destination
+Coords = Tuple[float, float]
 
 
 def filter_cities(df: pd.DataFrame, names: List[str]) -> pd.DataFrame:
@@ -50,6 +51,18 @@ class CitiesGraph:
         self.coords: pd.DataFrame = coordinates
         self.connections: Set[GrapSegment] = set()
 
+    def get_detailed_connections(self) -> List[Tuple[Coords, Coords, float]]:
+        """Return detail of each connection (origin coords, destin coords, distance)"""
+        return list(self.iter_detailed_connections())
+
+    def iter_detailed_connections(self) -> Iterable[Tuple[Coords, Coords, float]]:
+        """Iter on detail of each connection (origin coords, destin coords, distance)"""
+        for origin, destin in self.connections:
+            xo, yo = self.get_city_xy(origin)
+            xd, yd = self.get_city_xy(destin)
+            dist = np.sqrt((xo - xd)**2 + (yo - yd)**2)
+            yield origin, destin, dist
+
     def fully_connect(self):
         """Fully connect the graph"""
         indexes = self.coords.index.tolist()
@@ -57,7 +70,7 @@ class CitiesGraph:
             for j, destin in enumerate(indexes[i+1:], i+1):
                 self.connections.add((origin, destin))
 
-    def get_city_xy(self, city_index: int) -> Tuple[float, float]:
+    def get_city_xy(self, city_index: int) -> Coords:
         """Return coordinates of city given its index/name"""
         city = self.coords.loc[city_index]
         return city.x, city.y
