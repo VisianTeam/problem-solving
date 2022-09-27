@@ -111,7 +111,7 @@ class Connection:
 
     def tuple(self):
         """tuple representation of connection"""
-        return self.origin, self.destin, self.destin
+        return self.origin, self.destin
 
     def __eq__(self, other):
         return self.tuple() == other.tuple()
@@ -181,6 +181,7 @@ class CitiesGraph:
         for i, origin in enumerate(nodes):
             for destin in nodes[i+1:]:
                 self.create_connection(origin, destin)
+                self.create_connection(destin, origin)
 
     def get_distances_by_segments(self) -> Dict[GraphSegment, Connection]:
         """Return dictionary of graph segments with associated distances"""
