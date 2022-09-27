@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+from utils import coordinates
+
 GraphSegment = Tuple[int, int]  # index of origin, index of destination
 Coords = Tuple[float, float]
 
@@ -55,15 +57,27 @@ class Cities:
 
     def _build_coordinates(self) -> pd.DataFrame:
         """Convert detailed table of cities (source data) to database"""
-        lat = self.df['Near Latitude'].values * np.pi/180
-        lon = self.df['Near Longitude'].values * np.pi/180
-
-        earth_radius = 6371
+        x, y = coordinates.coords_to_xy(self.df["Coordinates"])
         return pd.DataFrame({
             'city': self.df['City'].values,
-            'x': earth_radius*np.cos(lat)*np.cos(lon),
-            'y': earth_radius*np.cos(lat)*np.sin(lon),
+            'x': x.values,
+            'y': y.values,
         }, index=self.df.index)
+
+    # ---- Plot
+
+    def plot(self, with_index: bool = False) -> None:
+        """Plot cities points with their labels"""
+        X = self.coords['x']
+        Y = self.coords['y']
+        T = self.coords['city']
+        if with_index:
+            T = self.index.to_series().apply(str) + ". " + T
+
+        fix, ax = plt.subplots()
+        ax.scatter(X, Y)
+        for x, y, t in zip(X, Y, T):
+            ax.annotate(t, (x, y))
 
 
 class Connection:
@@ -178,6 +192,14 @@ class CitiesGraph:
 
     # ---- Plot
 
+    def plot_cities(self, with_index: bool = True):
+        """Plot cities"""
+        self.cities.plot(with_index=with_index)
+
+    def plot_connections(self, **kwargs):
+        """Plot every existing connections"""
+        self.plot_segments([conn.segment for conn in self.connections], **kwargs)
+
     def plot_line(self, points: List[int], **kwargs) -> None:
         """Plot continuous line between points (given their index in coords)"""
         return self.plot_segments(zip(points[:-1], points[1:]), **kwargs)
@@ -193,19 +215,16 @@ class CitiesGraph:
         xd, yd = self.cities.get_city_xy(destination)
         plt.plot((xo, xd), (yo, yd), **kwargs)
 
-    def plot_connections(self, **kwargs):
-        """Plot every existing connections"""
-        self.plot_segments([conn.segment for conn in self.connections], **kwargs)
 
-    def plot_points(self, with_index: bool = False) -> None:
-        """Plot cities points with their labels"""
-        X = self.cities.coords['x']
-        Y = self.cities.coords['y']
-        T = self.cities.coords['city']
-        if with_index:
-            T = self.cities.index.to_series().apply(str) + ". " + T
-
-        fix, ax = plt.subplots()
-        ax.scatter(X, Y)
-        for x, y, t in zip(X, Y, T):
-            ax.annotate(t, (x, y))
+if __name__ == '__main__':
+    cities = Cities("data/cities.csv")
+    cities.filter([
+        "Dallas",
+        "Detroit",
+        "Los Angeles",
+        "Miami",
+        "New York City",
+        "Oklahoma City",
+        "San Francisco",
+    ])
+    cities._build_coordinates()
