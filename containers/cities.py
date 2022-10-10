@@ -79,6 +79,9 @@ class Cities:
         for x, y, t in zip(X, Y, T):
             ax.annotate(t, (x, y))
 
+    def __len__(self):
+        return len(self.df)
+
 
 class Connection:
     """A connection between 2 cities"""
@@ -215,6 +218,9 @@ class CitiesGraph:
         xo, yo = self.cities.get_city_xy(origin)
         xd, yd = self.cities.get_city_xy(destination)
         plt.plot((xo, xd), (yo, yd), **kwargs)
+
+    def __len__(self):
+        return len(self.cities)
 
 
 if __name__ == '__main__':

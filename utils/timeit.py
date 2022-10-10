@@ -9,11 +9,11 @@ def timeit(func):
         res = func(arg, *args, **kwargs)
         time_spent = time() - start
 
-        if isinstance(arg, (list, tuple, dict, set)):
+        try:
             info = f"{len(arg)} items"
-        else:
+        except TypeError:
             info = f"no metric, {type(arg)} not handled"
-        print(f"Took {time_spent:.5f}s in {func.__name__!r} [{info}]")
+        print(f"{func.__name__!r} run took {time_spent:.5f}s [{info}]")
         return res
 
     return wrapper
