@@ -1,6 +1,6 @@
 import pytest
 
-from algorithms import algo_recur as recursion
+from algorithms import recursion
 from utils.timeout import timeout
 
 
