@@ -1,3 +1,6 @@
+import functools
+
+
 def factorial(n: int) -> int:
     """Return value of n! (factorial n)"""
     if n < 0:
@@ -8,6 +11,7 @@ def factorial(n: int) -> int:
         return n * factorial(n - 1)
 
 
+@functools.lru_cache(maxsize=500)
 def fibonacci(n: int) -> int:
     """Return value of the i-th element of the Fibonacci sequence"""
     if n < 0:
