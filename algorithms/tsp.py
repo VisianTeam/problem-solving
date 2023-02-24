@@ -1,8 +1,5 @@
 from typing import Container, Dict, List, Optional, Tuple
 
-import matplotlib.pyplot as plt
-
-from containers.cities import CitiesGraph
 from utils.timeit import timeit
 
 
@@ -12,6 +9,7 @@ Links = Container[Tuple[int, int]]
 
 
 def link_exists(link: Tuple[int, int], links: Optional[Links]) -> bool:
+    """Return whether link exist in a list of links"""
     return (links is None) or (link in links)
 
 
@@ -19,7 +17,10 @@ def list_permutations(
         nodes: List[int],
         links: Optional[Links] = None,
 ) -> List[Sequence]:
-    """Return all possible permutations of nodes"""
+    """Return all possible permutations of nodes
+
+    if links is None, graph is considered fully connected.
+    """
     if len(nodes) == 1:
         return [nodes]
 
@@ -40,7 +41,10 @@ def list_circles(
         start_index: int = 0,
         links: Optional[Links] = None,
 ) -> List[Sequence]:
-    """Return list of closed chains going through every nodes"""
+    """Return list of closed chains going through every nodes
+
+    if links is None, graph is considered fully connected.
+    """
     if len(nodes) == 1:
         return [nodes]
 
@@ -78,7 +82,7 @@ def compute_sequence_cost(sequence: Sequence, costs: Costs) -> float:
     ])
 
 
-def get_cheapest_sequence(sequences: List[Sequence], costs: Costs) -> float:
+def get_cheapest_sequence(sequences: List[Sequence], costs: Costs) -> Sequence:
     """Return sequence with the minimum cost"""
     best = None
     best_cost = None
@@ -91,17 +95,7 @@ def get_cheapest_sequence(sequences: List[Sequence], costs: Costs) -> float:
 
 
 @timeit
-def find_best_path(graph: CitiesGraph, plot: bool = True) -> Sequence:
+def find_best_sequence(nodes: List[int], costs: Costs) -> Sequence:
     """Find best path to go through all cities of graph in a closed circle"""
-    nodes = graph.get_nodes()
-    costs = graph.get_distances_by_segments()
     sequences = list_circles(nodes, links=costs)
-    best_sequence = get_cheapest_sequence(sequences, costs=costs)
-    if plot:
-        graph.plot_cities(with_index=True)
-        graph.plot_connections(color="grey")
-        graph.plot_line(best_sequence, color='cyan')
-        plt.gca().set_aspect('equal', adjustable='box')
-    return best_sequence
-
-
+    return get_cheapest_sequence(sequences, costs=costs)
