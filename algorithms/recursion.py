@@ -1,5 +1,7 @@
 def factorial(n: int) -> int:
     """Return value of n! (factorial n)"""
+    if n < 0:
+        raise ValueError('Negative numbers are not handle by current implementation')
     if n <= 1:
         return 1
     else:
@@ -8,6 +10,8 @@ def factorial(n: int) -> int:
 
 def fibonacci(n: int) -> int:
     """Return value of the i-th element of the Fibonacci sequence"""
+    if n < 0:
+        raise ValueError('Fibonacci is not defined on negative numbers')
     if n == 0:
         return 0
     elif n == 1:

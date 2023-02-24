@@ -1,3 +1,4 @@
+import os
 import signal
 
 
@@ -11,6 +12,8 @@ class timeout:
         raise TimeoutError(self.error_message)
 
     def __enter__(self):
+        if os.name == 'nt':
+            raise OSError('Cannot use timeout context in windows')
         signal.signal(signal.SIGALRM, self.handle_timeout)
         signal.alarm(self.seconds)
 

@@ -1,0 +1,5 @@
+pytest
+pandas>1.2
+utm
+numpy
+matplotlib

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from algorithms import recursion
@@ -31,6 +33,7 @@ def test_fibo(n, res):
     assert recursion.fibonacci(n) == res
 
 
+@pytest.mark.skipif(os.name == 'nt', reason='Cannot use timeout context in windows')
 def test_fibo_perf():
     with timeout(1):
         assert recursion.fibonacci(100) == 354224848179261915075
