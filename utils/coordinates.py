@@ -30,7 +30,7 @@ def coords_to_latlon_scalar(coords: str, precision: Optional[int] = 5) -> Tuple[
 
 def coords_to_latlon(coords: pd.Series, precision: Optional[int] = 5) -> Tuple[pd.Series, pd.Series]:
     """Convert coordinates string to latitude, longitude"""
-    latlon = coords.str.split(' ', 2, expand=True).rename({0: 'lat', 1: 'lon'}, axis=1)
+    latlon = coords.str.split(' ', n=2, expand=True).rename({0: 'lat', 1: 'lon'}, axis=1)
     latlon = latlon.applymap(angle_str2value, precision=precision)
     return latlon.lat, latlon.lon
 
